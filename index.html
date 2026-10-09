@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f5f1">
+  <meta name="description" content="A calm, practical workspace for competitive exam preparation.">
+  <title>Daymark — Your prep, honestly.</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#overview" aria-label="Daymark home">
+        <span class="brand-mark"><span></span><span></span><span></span></span>
+        <span class="brand-name">daymark<span class="brand-period">.</span><small>YOUR PREP, HONESTLY.</small></span>
+      </a>
+
+      <div class="side-label">WORKSPACE</div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-link active" data-page="overview"><span class="nav-icon">◫</span>Overview</button>
+        <button class="nav-link" data-page="syllabus"><span class="nav-icon">▤</span>Syllabus <span class="nav-count" id="nav-syllabus-count">—</span></button>
+        <button class="nav-link" data-page="focus"><span class="nav-icon">◷</span>Focus room</button>
+        <button class="nav-link" data-page="tests"><span class="nav-icon">⌁</span>Tests &amp; mistakes</button>
+        <button class="nav-link" data-page="planner"><span class="nav-icon">▦</span>Planner</button>
+        <button class="nav-link" data-page="insights"><span class="nav-icon">↗</span>Insights</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="tiny-progress-card">
+          <div class="tiny-progress-head"><span>Your week</span><span id="side-week-percent">0%</span></div>
+          <div class="progress-track"><span id="side-week-fill" style="width:0%"></span></div>
+          <p id="side-week-note">Small sessions count, too.</p>
+        </div>
+        <button class="profile-button" id="open-settings">
+          <span class="avatar" id="user-avatar">A</span>
+          <span class="profile-copy"><strong id="profile-name">Aspirant</strong><small id="profile-exam">JEE Main · 2027</small></span>
+          <span class="profile-dots">•••</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="mobile-bar">
+      <a class="brand" href="#overview"><span class="brand-mark"><span></span><span></span><span></span></span><span class="brand-name">daymark<span class="brand-period">.</span></span></a>
+      <button class="icon-button" id="mobile-menu" aria-label="Open navigation">☰</button>
+    </div>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div><p class="eyebrow" id="today-label">FRIDAY, OCTOBER 9</p><h1 id="page-title">Make today count.</h1></div>
+        <div class="topbar-actions">
+          <span class="quiet-status"><span class="status-dot"></span>Personal workspace</span>
+          <button class="icon-button theme-toggle" id="theme-toggle" data-action="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode" aria-pressed="false">☾</button>
+          <button class="button button-dark" id="quick-focus"><span class="button-symbol">▶</span> Start focus</button>
+        </div>
+      </header>
+      <div class="content" id="content" tabindex="-1"></div>
+      <footer class="app-footer"><span>DAYMARK / MADE FOR THE LONG GAME</span><span>Progress over performance theatre.</span></footer>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="settings-dialog" id="settings-dialog">
+    <form method="dialog" class="dialog-head"><div><p class="eyebrow">YOUR SPACE</p><h2>Make it yours.</h2></div><button class="icon-button" value="cancel" aria-label="Close settings">×</button></form>
+    <div class="settings-body">
+      <label class="field-label" for="setting-name">What should we call you?</label>
+      <input class="text-input" id="setting-name" maxlength="32" placeholder="Your name">
+      <div class="field-row">
+        <div><label class="field-label" for="setting-exam">Target exam</label><select class="text-input" id="setting-exam"><option>JEE Main</option><option>JEE Advanced</option><option>NEET</option><option>CUET</option><option>Other</option></select></div>
+        <div><label class="field-label" for="setting-year">Target year</label><select class="text-input" id="setting-year"><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></div>
+      </div>
+      <label class="field-label" for="setting-target">Daily focus target (minutes)</label>
+      <input class="text-input" id="setting-target" type="number" min="15" max="900" step="15">
+      <div class="settings-note">Your data stays in this browser. Export a backup before clearing site data or switching devices.</div>
+      <div class="settings-actions"><button type="button" class="button button-outline" id="export-data">Export backup</button><button type="button" class="button button-outline" id="import-data">Import backup</button><input type="file" id="import-file" accept="application/json" hidden><button type="button" class="button button-danger-soft" id="reset-data">Reset workspace</button></div>
+      <button type="button" class="button button-dark button-full" id="save-settings">Save changes</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
