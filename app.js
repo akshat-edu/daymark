@@ -267,8 +267,8 @@ function setPage(page) {
   $$('.nav-link').forEach(button => button.classList.toggle('active', button.dataset.page === page));
   $('#sidebar').classList.remove('open');
   const titleMap = {
-    overview: 'Make today count.', syllabus: 'One chapter at a time.', focus: 'Protect your attention.',
-    tests: 'Learn from every attempt.', planner: 'Give the week a shape.', insights: 'Look at the pattern.'
+    overview: 'Study log', syllabus: 'Syllabus checklist', focus: 'Focus timer',
+    tests: 'Tests & mistakes', planner: 'Weekly plan', insights: 'Progress notes.'
   };
   $('#page-title').textContent = titleMap[page] || 'Daymark';
   renderPage();
@@ -308,7 +308,7 @@ function updateFrame() {
   const percent = target ? Math.min(100, Math.round(mins / target * 100)) : 0;
   $('#side-week-percent').textContent = `${percent}%`;
   $('#side-week-fill').style.width = `${percent}%`;
-  $('#side-week-note').textContent = mins ? `${formatMinutes(mins)} of focus this week.` : 'Small sessions count, too.';
+  $('#side-week-note').textContent = mins ? `${formatMinutes(mins)} of focus this week.` : 'No focus sessions logged this week.';
   $('#nav-syllabus-count').textContent = `${syllabusStats().percent}%`;
 }
 
@@ -343,12 +343,12 @@ function renderOverview() {
   return `
     <section class="hero-band">
       <div class="welcome-card">
-        <div class="welcome-topline"><span></span> A steady plan beats a perfect plan</div>
-        <div><h2>Show up for the work.<br>Let the numbers follow.</h2><p>Your prep is a long game. Keep the next step small, clear and doable.</p></div>
-        <div class="welcome-bottom"><button class="button button-dark" data-action="focus">Start a session <span>↗</span></button><button class="text-link" data-action="page" data-page="planner">See this week →</button></div>
+        <div class="welcome-topline"><span></span> Today / study log</div>
+        <div><h2>Pick one thing.<br>Work on it properly.</h2><p>A small plan is easier to follow on an ordinary day.</p></div>
+        <div class="welcome-bottom"><button class="button button-dark" data-action="focus">Start a focus block <span>↗</span></button><button class="text-link" data-action="page" data-page="planner">Open week plan →</button></div>
       </div>
       <div class="date-card">
-        <div class="date-head"><span>Today's page</span><span class="streak-tag">✳ ${getStreak()} day streak</span></div>
+        <div class="date-head"><span>Date in the log</span><span class="streak-tag">${getStreak()} day streak</span></div>
         <div><div class="date-number">${dateParts}</div><p class="date-month">${monthParts}</p></div>
         <div class="date-bottom"><span>Daily focus target</span><strong>${formatMinutes(state.profile.dailyTarget)}</strong></div>
       </div>
@@ -357,25 +357,25 @@ function renderOverview() {
     <section class="metric-grid">
       <article class="metric-card"><div class="metric-heading"><span>Focused today</span><span class="metric-icon">◷</span></div><div class="metric-value">${formatMinutes(todayMinutes)}</div><div class="metric-foot"><strong>${Math.min(100, Math.round(todayMinutes / Math.max(1, state.profile.dailyTarget) * 100))}%</strong> of your daily target</div></article>
       <article class="metric-card"><div class="metric-heading"><span>Syllabus covered</span><span class="metric-icon orange">▤</span></div><div class="metric-value">${stats.percent}%</div><div class="metric-foot">${stats.complete} chapters fully wrapped</div></article>
-      <article class="metric-card"><div class="metric-heading"><span>Practice logged</span><span class="metric-icon blue">⌁</span></div><div class="metric-value">${testsDone}</div><div class="metric-foot">${state.mistakes.length} mistakes saved for review</div></article>
+      <article class="metric-card"><div class="metric-heading"><span>Tests logged</span><span class="metric-icon blue">⌁</span></div><div class="metric-value">${testsDone}</div><div class="metric-foot">${state.mistakes.length} error notes saved</div></article>
     </section>
 
     <section class="section-grid">
       <div class="panel">
-        <div class="panel-head"><div><h3 class="panel-title">Today's route</h3><p class="panel-subtitle">A short list you can actually finish.</p></div><button class="text-link" data-action="add-task">+ Add task</button></div>
-        <div class="panel-body"><div class="task-list">${tasks.length ? tasks.map(task => taskRow(task)).join('') : '<div class="empty-state">Nothing planned for today. Add one clear next step.</div>'}</div><div class="panel-separator" style="margin-top:7px;padding-top:11px;display:flex;justify-content:space-between;align-items:center"><span class="subtle" style="font-size:10px">${completed} of ${tasks.length} complete</span><button class="text-link" data-action="page" data-page="planner">Open planner →</button></div></div>
+        <div class="panel-head"><div><h3 class="panel-title">Today's tasks</h3><p class="panel-subtitle">Only tasks you add will appear here.</p></div><button class="text-link" data-action="add-task">+ Add task</button></div>
+        <div class="panel-body"><div class="task-list">${tasks.length ? tasks.map(task => taskRow(task)).join('') : '<div class="empty-state">No tasks for today yet. Add one when you are ready.</div>'}</div><div class="panel-separator" style="margin-top:7px;padding-top:11px;display:flex;justify-content:space-between;align-items:center"><span class="subtle" style="font-size:10px">${completed} of ${tasks.length} complete</span><button class="text-link" data-action="page" data-page="planner">Open planner →</button></div></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><div><h3 class="panel-title">The week, so far</h3><p class="panel-subtitle">Your tracked focus time, day by day.</p></div><span class="tag green">${formatMinutes(weekMinutes)}</span></div>
+        <div class="panel-head"><div><h3 class="panel-title">Focus this week</h3><p class="panel-subtitle">Completed timer sessions, by day.</p></div><span class="tag green">${formatMinutes(weekMinutes)}</span></div>
         <div class="panel-body">${weeklyBars}<div class="mini-legend"><span><i class="legend-dot"></i>Focused minutes</span><span>Target: ${formatMinutes(state.profile.dailyTarget)}/day</span></div></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><div><h3 class="panel-title">Keep an eye on</h3><p class="panel-subtitle">Topics still in progress.</p></div><button class="text-link" data-action="page" data-page="syllabus">View all →</button></div>
+        <div class="panel-head"><div><h3 class="panel-title">Syllabus left</h3><p class="panel-subtitle">Chapters not fully checked off yet.</p></div><button class="text-link" data-action="page" data-page="syllabus">View all →</button></div>
         <div class="panel-body"><div class="backlog-list">${backlog.map(item => `<div class="backlog-row"><span class="subject-stamp ${subjectMeta[item.subject].className}">${subjectMeta[item.subject].stamp}</span><div class="backlog-copy"><strong>${item.subject}</strong><small>${Object.values(state.chapters).filter(ch => ch.subject === item.subject && getChapterProgress(ch).done === 3).length} fully revised chapters</small></div><span class="backlog-count">${item.count} open</span></div>`).join('')}</div></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><div><h3 class="panel-title">Next up</h3><p class="panel-subtitle">One thing worth doing next.</p></div><span class="tag">UP NEXT</span></div>
-        <div class="panel-body">${nextTask ? `<div class="next-test"><div class="next-test-top"><span class="test-label">Planned task</span><span class="due-pill">${nextTask.date === todayKey() ? 'Today' : dateLabel(new Date(`${nextTask.date}T12:00:00`))}</span></div><div class="test-name">${escapeHTML(nextTask.title)}</div><p>${escapeHTML(nextTask.subject)} · ${nextTask.minutes} minutes set aside</p><div class="next-test-bottom"><span>Keep it simple.</span><button class="text-link" data-action="complete-task" data-id="${nextTask.id}">Mark done ✓</button></div></div>` : '<div class="empty-state">You cleared the list. Plan the next session when you’re ready.</div>'}</div>
+        <div class="panel-head"><div><h3 class="panel-title">Next up</h3><p class="panel-subtitle">Next task in your plan.</p></div><span class="tag">UP NEXT</span></div>
+        <div class="panel-body">${nextTask ? `<div class="next-test"><div class="next-test-top"><span class="test-label">Planned task</span><span class="due-pill">${nextTask.date === todayKey() ? 'Today' : dateLabel(new Date(`${nextTask.date}T12:00:00`))}</span></div><div class="test-name">${escapeHTML(nextTask.title)}</div><p>${escapeHTML(nextTask.subject)} · ${nextTask.minutes} minutes set aside</p><div class="next-test-bottom"><span>Planned next step</span><button class="text-link" data-action="complete-task" data-id="${nextTask.id}">Mark done ✓</button></div></div>` : '<div class="empty-state">No upcoming tasks. Add one in the planner when you need it.</div>'}</div>
       </div>
     </section>`;
 }
@@ -409,7 +409,7 @@ function renderSyllabus() {
   if (state.profile.exam !== 'NEET' && subjectFilter === 'All') chapters = chapters.filter(ch => ch.subject !== 'Biology');
   if (syllabusSearch.trim()) chapters = chapters.filter(ch => `${ch.name} ${ch.subject}`.toLowerCase().includes(syllabusSearch.toLowerCase()));
   return `
-    <div class="page-intro"><div><div class="eyebrow">THE BIG PICTURE</div><h2>Syllabus, without the guesswork.</h2><p>Track learning, problem practice and revision separately. A chapter is only done when you have worked through all three.</p></div><div class="page-actions"><button class="button button-outline" data-action="add-chapter">+ Add chapter</button></div></div>
+    <div class="page-intro"><div><div class="eyebrow">CLASS 11 + CLASS 12</div><h2>Syllabus checklist</h2><p>Mark lectures, practice and revision separately. Progress updates as you check each step.</p></div><div class="page-actions"><button class="button button-outline" data-action="add-chapter">+ Add chapter</button></div></div>
     <section class="syllabus-summary">
       <article class="metric-card"><div class="metric-heading">Tracked chapters</div><div class="metric-value">${stats.chapters}</div><div class="metric-foot">Across your current subjects</div></article>
       <article class="metric-card"><div class="metric-heading">Fully wrapped</div><div class="metric-value">${stats.complete}</div><div class="metric-foot">All three steps checked off</div></article>
@@ -432,7 +432,7 @@ function renderFocus() {
   const todayMinutes = todaySessions.reduce((sum, session) => sum + safeNumber(session.minutes), 0);
   const todayTasks = getTodayTasks().filter(task => !task.done);
   return `
-    <div class="page-intro"><div><div class="eyebrow">FOCUS ROOM</div><h2>Make a little room for deep work.</h2><p>Put your phone away, pick one task, and start. This timer records completed focus sessions in your local history.</p></div><div class="page-actions"><span class="tag green">NO SOCIAL FEED. NO NOISE.</span></div></div>
+    <div class="page-intro"><div><div class="eyebrow">FOCUS TIMER</div><h2>One block at a time.</h2><p>Choose a task and start the timer. Finished focus blocks are added to your log on this device.</p></div><div class="page-actions"><span class="tag green">25 MIN FOCUS / 5 MIN BREAK</span></div></div>
     <div class="focus-layout">
       <section class="timer-panel">
         <div class="timer-eyebrow">TIME WELL SPENT</div>
@@ -511,7 +511,7 @@ function renderTests() {
   const average = state.tests.length ? Math.round(state.tests.reduce((sum, test) => sum + safeNumber(test.score) / Math.max(1,safeNumber(test.total)) * 100, 0) / state.tests.length) : 0;
   const totalMarks = state.tests.reduce((sum, test) => sum + safeNumber(test.score), 0);
   return `
-    <div class="page-intro"><div><div class="eyebrow">PRACTICE & REFLECTION</div><h2>The useful part comes after the test.</h2><p>Log your attempts, then keep a short record of the mistakes you don't want to repeat.</p></div><div class="page-actions"><button class="button button-outline" data-action="add-mistake">+ Log mistake</button><button class="button button-dark" data-action="add-test">+ Add test</button></div></div>
+    <div class="page-intro"><div><div class="eyebrow">TEST LOG</div><h2>Scores and error notes</h2><p>Record your attempts and write down the errors you want to catch next time.</p></div><div class="page-actions"><button class="button button-outline" data-action="add-mistake">+ Log mistake</button><button class="button button-dark" data-action="add-test">+ Add test</button></div></div>
     <section class="metric-grid"><article class="metric-card"><div class="metric-heading">Tests logged</div><div class="metric-value">${state.tests.length}</div><div class="metric-foot">Your practice history</div></article><article class="metric-card"><div class="metric-heading">Average accuracy</div><div class="metric-value">${average}%</div><div class="metric-foot">Across logged attempts</div></article><article class="metric-card"><div class="metric-heading">Mistakes to revisit</div><div class="metric-value">${state.mistakes.filter(item => !item.reviewed).length}</div><div class="metric-foot">Mark one reviewed after retrying</div></article></section>
     <div class="test-grid">
       <section class="panel"><div class="panel-head"><div><h3 class="panel-title">Test history</h3><p class="panel-subtitle">Scores make more sense as a trend.</p></div><select class="select-input" id="test-filter" aria-label="Filter tests">${['All','Physics','Chemistry','Mathematics','Biology'].map(subject => `<option ${testFilter === subject ? 'selected' : ''}>${subject}</option>`).join('')}</select></div><div class="panel-body"><div>${filteredTests.length ? [...filteredTests].sort((a,b) => b.date.localeCompare(a.date)).map(test => `<div class="test-row"><div><strong>${escapeHTML(test.name)}</strong><small>${escapeHTML(test.subject)} · ${dateLabel(new Date(`${test.date}T12:00:00`), { day: 'numeric', month: 'short', year: 'numeric' })}</small></div><div class="score-block"><strong>${test.score}<span style="display:inline;font:11px 'DM Sans',sans-serif"> / ${test.total}</span></strong><span>${Math.round(test.score / Math.max(1,test.total) * 100)}% score</span></div></div>`).join('') : '<div class="empty-state">No tests in this filter yet. Add your first attempt above.</div>'}</div></div></section>
@@ -524,7 +524,7 @@ function renderPlanner() {
   const total = state.tasks.filter(task => task.date >= todayKey(dates[0]) && task.date <= todayKey(dates[6])).length;
   const done = state.tasks.filter(task => task.date >= todayKey(dates[0]) && task.date <= todayKey(dates[6]) && task.done).length;
   return `
-    <div class="page-intro"><div><div class="eyebrow">WEEKLY PLAN</div><h2>Make space for the important stuff.</h2><p>This is a simple plan, not a contract. Move things around when real life happens.</p></div><div class="page-actions"><button class="button button-dark" data-action="add-task">+ Plan a task</button></div></div>
+    <div class="page-intro"><div><div class="eyebrow">NEXT SEVEN DAYS</div><h2>Weekly plan</h2><p>Add what you realistically expect to do. Click a task when it is finished.</p></div><div class="page-actions"><button class="button button-dark" data-action="add-task">+ Plan a task</button></div></div>
     <section class="metric-grid"><article class="metric-card"><div class="metric-heading">Tasks this week</div><div class="metric-value">${total}</div><div class="metric-foot">Across all seven days</div></article><article class="metric-card"><div class="metric-heading">Completed</div><div class="metric-value">${done}</div><div class="metric-foot">${total ? Math.round(done/total*100) : 0}% of planned tasks</div></article><article class="metric-card"><div class="metric-heading">Planned study time</div><div class="metric-value">${formatMinutes(state.tasks.filter(task => task.date >= todayKey(dates[0]) && task.date <= todayKey(dates[6])).reduce((sum,task)=>sum+safeNumber(task.minutes),0))}</div><div class="metric-foot">Time you’ve set aside</div></article></section>
     <section class="planner-week">${dates.map(date => {
       const key = todayKey(date);
@@ -543,12 +543,12 @@ function renderInsights() {
   const testAccuracy = state.tests.length ? Math.round(state.tests.reduce((sum,test)=>sum + safeNumber(test.score)/Math.max(1,safeNumber(test.total))*100,0) / state.tests.length) : null;
   const highestSubject = subjects.map(subject => ({ subject, percent: getSubjectProgress(subject) })).sort((a,b)=>b.percent-a.percent)[0];
   return `
-    <div class="page-intro"><div><div class="eyebrow">YOUR DATA, MADE USEFUL</div><h2>Look for patterns, not perfection.</h2><p>These numbers reflect what you have logged here. They are a mirror, not a prediction of your rank.</p></div><div class="page-actions"><button class="button button-outline" data-action="export">Export data ↗</button></div></div>
+    <div class="page-intro"><div><div class="eyebrow">FROM YOUR LOG</div><h2>Progress notes</h2><p>These figures come from the sessions, tests and syllabus steps you record here.</p></div><div class="page-actions"><button class="button button-outline" data-action="export">Export data ↗</button></div></div>
     <section class="metric-grid"><article class="metric-card"><div class="metric-heading">Focus this week</div><div class="metric-value">${formatMinutes(values.reduce((a,b)=>a+b,0))}</div><div class="metric-foot">${formatMinutes(state.profile.dailyTarget*7)} weekly target</div></article><article class="metric-card"><div class="metric-heading">Average test score</div><div class="metric-value">${testAccuracy === null ? '—' : `${testAccuracy}%`}</div><div class="metric-foot">${testAccuracy === null ? 'Log a test to start a trend' : `${state.tests.length} attempts recorded`}</div></article><article class="metric-card"><div class="metric-heading">Strongest syllabus progress</div><div class="metric-value">${highestSubject ? `${highestSubject.percent}%` : '—'}</div><div class="metric-foot">${highestSubject?.subject || 'No subject yet'}</div></article></section>
     <div class="insight-grid"><section class="panel"><div class="panel-head"><div><h3 class="panel-title">Focus across the week</h3><p class="panel-subtitle">Minutes from sessions you completed.</p></div><span class="tag">${maxWeek ? `Peak ${formatMinutes(maxWeek)}` : 'NO SESSIONS YET'}</span></div><div class="big-chart"><div class="chart-bars">${dates.map((date,i)=>`<div class="chart-col"><span class="bar-value">${values[i] ? values[i] : ''}</span><div class="bar ${todayKey(date) === todayKey() ? 'current' : ''}" style="height:${Math.max(values[i] ? 4 : 2, values[i]/max*160)}px" title="${values[i]} minutes"></div><span class="bar-label">${dayLabel(date).slice(0,1)}</span></div>`).join('')}</div><div class="mini-legend" style="margin-top:26px"><span><i class="legend-dot"></i>Logged focus time</span><span>${formatMinutes(values.reduce((a,b)=>a+b,0))} total</span></div></div></section>
       <section class="panel"><div class="panel-head"><div><h3 class="panel-title">Syllabus by subject</h3><p class="panel-subtitle">Learning + practice + revision.</p></div></div><div class="panel-body"><div class="subject-progress-list">${subjects.map(subject=>`<div class="subject-progress-row"><span class="subject-stamp ${subjectMeta[subject].className}">${subjectMeta[subject].stamp}</span><div><strong>${subject}</strong><div class="progress-track"><span style="width:${getSubjectProgress(subject)}%"></span></div><small>${Object.values(state.chapters).filter(ch=>ch.subject===subject && getChapterProgress(ch).done===3).length} chapters fully wrapped</small></div><span class="percent">${getSubjectProgress(subject)}%</span></div>`).join('')}</div></div></section>
     </div>
-    <div class="insight-note"><span class="note-mark">✳</span><div><strong>${maxWeek ? 'Consistency comes from returning.' : 'Your baseline starts with the next session.'}</strong><p>${maxWeek ? 'A lighter day is not lost time. Use the chart to spot what your real week looks like, then plan for that week—not an imaginary one.' : 'Start a timer in Focus Room and finish one session. Your first real pattern will appear here after a few days of logging.'}</p></div></div>`;
+    <div class="insight-note"><span class="note-mark">✳</span><div><strong>${maxWeek ? 'Focus time logged this week.' : 'Nothing logged yet.'}</strong><p>${maxWeek ? 'A lighter day is not lost time. Use the chart to spot what your real week looks like, then plan for that week—not an imaginary one.' : 'Start a timer in Focus Room and finish one session. Your first real pattern will appear here after a few days of logging.'}</p></div></div>`;
 }
 
 function addTask(date = todayKey()) {
